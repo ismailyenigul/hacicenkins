@@ -1,17 +1,14 @@
 pipeline {
   environment {
-    imagename = "ismailtest"
+    imagename = "yenigul/hacicenkins"
     registryCredential = 'yenigul-dockerhub'
-    ecrurl = "https://828556645578.dkr.ecr.us-east-2.amazonaws.com"
-    ecrcredentials = "ecr:us-east-2:ecr-ismail"
     dockerImage = ''
-  } 
+  }
   agent any
   stages {
     stage('Cloning Git') {
       steps {
-      //  git([url: 'https://github.com/ismailyenigul/hacicenkins.git', branch: 'master', credentialsId: 'ismailyenigul-github-user-token'])
-                checkout scm
+        git([url: 'https://github.com/ismailyenigul/hacicenkins.git', branch: 'master', credentialsId: 'ismailyenigul-github-user-token'])
 
       }
     }
@@ -27,6 +24,7 @@ pipeline {
       
           anyOf {
             branch 'test'
+            branch 'PR-1'
           }
        
      }
@@ -44,12 +42,14 @@ stage('Deploy Master Image') {
    when {
       anyOf {
             branch 'master'
-            branch 'PR-1'
       }
      }
       steps{
         script {
-          docker.withRegistry(ecrurl, ecrcredentials) {     
+          docker.withRegistry("https://your.ecr.domain.amazonws.com", "ecr:us-east-1:credential-id") {
+  docker.image("your-image-name").push()
+}
+          docker.withRegistry( '', registryCredential ) {
             dockerImage.push("$BUILD_NUMBER")
              dockerImage.push('latest')
 
